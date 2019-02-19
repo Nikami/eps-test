@@ -2,11 +2,13 @@ import { NgModule, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from './material/material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ProductsService } from './services/products.service';
 
 @NgModule({
   declarations: [],
   imports: [CommonModule, FormsModule, ReactiveFormsModule, MaterialModule],
-  exports: [MaterialModule]
+  exports: [MaterialModule],
+  providers: [ProductsService]
 })
 export class CoreModule {
   constructor(

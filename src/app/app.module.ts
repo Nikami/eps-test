@@ -6,9 +6,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CoreModule } from './core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ProductTableComponent } from './product-table/product-table.component';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, ProductTableComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
