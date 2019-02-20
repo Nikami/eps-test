@@ -12,24 +12,31 @@ function timestampToDate(timestamp) {
 const products: Product[] = [
   {
     id: 1,
-    title: 'Product #1',
+    title: 'Bosch',
     description: 'BOSCH KGN39VI35',
     price: 15587.0,
     delivery_date: timestampToDate(1550580024)
   },
   {
     id: 2,
-    title: 'Product #2',
+    title: 'Samsung',
     description: 'SAMSUNG RB29FSRNDSA/UA',
-    price: 12349.02,
+    price: 7000.0,
     delivery_date: timestampToDate(1550925624)
   },
   {
     id: 3,
-    title: 'Product #3',
+    title: 'Snai',
     description: 'SNAIGE RF-390-1803AA',
     price: 7999.99,
     delivery_date: timestampToDate(1551271224)
+  },
+  {
+    id: 4,
+    title: 'Bosch',
+    description: 'BOSCH I393',
+    price: 7000.0,
+    delivery_date: timestampToDate(1550580629)
   }
 ];
 

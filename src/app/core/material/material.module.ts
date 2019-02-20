@@ -2,10 +2,11 @@ import { NgModule } from '@angular/core';
 import {
   MatButtonModule,
   MatCardModule,
-  MatInputModule,
-  MatTooltipModule,
   MatDatepickerModule,
-  MatTableModule
+  MatInputModule,
+  MatNativeDateModule,
+  MatTableModule,
+  MatTooltipModule
 } from '@angular/material';
 
 const COMPONENT_MODULES = [
@@ -13,12 +14,14 @@ const COMPONENT_MODULES = [
   MatInputModule,
   MatCardModule,
   MatTooltipModule,
+  MatNativeDateModule,
   MatDatepickerModule,
   MatTableModule
 ];
 
 @NgModule({
   imports: [...COMPONENT_MODULES],
-  exports: [...COMPONENT_MODULES]
+  exports: [...COMPONENT_MODULES],
+  providers: [MatDatepickerModule]
 })
 export class MaterialModule {}

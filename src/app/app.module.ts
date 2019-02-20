@@ -7,9 +7,10 @@ import { AppComponent } from './app.component';
 import { CoreModule } from './core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ProductTableComponent } from './product-table/product-table.component';
+import { ProductFilterComponent } from './product-filter/product-filter.component';
 
 @NgModule({
-  declarations: [AppComponent, ProductTableComponent],
+  declarations: [AppComponent, ProductTableComponent, ProductFilterComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
