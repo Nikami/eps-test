@@ -3,9 +3,9 @@ import { Product } from '../../shared/models/product';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { first, tap } from 'rxjs/operators';
 import { ProductsService } from './products.service';
-import { CrossFilter, Filter } from '../../shared/filter/filter';
+import { Filter } from '../../shared/filter/filter';
 
-export interface Filters {
+interface Filters {
   [key: string]: Filter;
 }
 
@@ -24,8 +24,20 @@ export class ProductsFilterService {
     return this.filteredProducts$.asObservable();
   }
 
-  applyFilters(filters: Filters): void {
-    this.appliedFilters$.next(filters);
+  addFilter(name: string, filter: Filter): void {
+    this.appliedFilters$.next(
+      Object.assign(
+        {
+          [name]: filter
+        },
+        this.appliedFilters$.value
+      )
+    );
+  }
+
+  removeFilter(field: string): void {
+    const { [field]: filter, ...rest } = this.appliedFilters$.value;
+    this.appliedFilters$.next(rest);
   }
 
   private subscribeToProducts(): void {
@@ -33,7 +45,7 @@ export class ProductsFilterService {
       .get()
       .pipe(
         first(),
-        tap(ps => {
+        tap((ps: Product[]) => {
           this.products = ps;
           this.filteredProducts$.next(ps);
         })
@@ -46,40 +58,18 @@ export class ProductsFilterService {
       const filterKeys = Object.keys(filters);
 
       if (filterKeys.length > 0) {
-        let products = this.products;
-        let unionAdditionalFilter = {};
+        let products: Product[] = this.products;
 
-        filterKeys.forEach(fk => {
-          if (filters[fk] instanceof CrossFilter) {
-            products = this.filter(filters[fk], products);
-          } else {
-            unionAdditionalFilter = Object.assign(
-              filters[fk],
-              unionAdditionalFilter
-            );
-          }
+        filterKeys.forEach((fk: string) => {
+          products = products.filter(
+            filters[fk].comparatorFn.bind(filters[fk])
+          );
         });
-
-        if (Object.keys(unionAdditionalFilter).length > 0) {
-          products = this.filter(unionAdditionalFilter, products);
-        }
 
         this.filteredProducts$.next(products);
       } else {
         this.filteredProducts$.next(this.products);
       }
     });
-  }
-
-  private filter(filter: Filter, products: Product[]): Product[] {
-    if (filter instanceof CrossFilter) {
-      return products.filter(filter.comparatorFn.bind(filter));
-    } else {
-      // TODO: rewrite this
-      return products.filter(product => {
-        const fields: string[] = Object.keys(filter);
-        return fields.every(field => filter[field] === product[field]);
-      });
-    }
   }
 }

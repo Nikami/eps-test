@@ -3,41 +3,51 @@
   <div class="row">
 
     <div class="col-6 d-flex align-items-center">
-      Total: {{ total$ | async }} items
+      <span class="font-weight-bold">Total:</span>
+      &nbsp;
+      {{ total$ | async }} item(s)
     </div>
 
     <div class="col-6">
 
       <mat-form-field class="w-100">
-        <input matInput
-               type="text"
-               placeholder="Search"
-               [formControl]="searchFormControl">
+        <input
+          matInput
+          type="text"
+          placeholder="Search"
+          [formControl]="filterControls.search">
       </mat-form-field>
 
     </div>
 
   </div>
 
-  <div class="row">
+  <app-collapsible label="Additional filter">
 
-    <div class="col-6">
-      <mat-form-field class="w-100">
-        <input matInput
-               type="number"
-               placeholder="Max price"
-               [formControl]="priceFormControl">
-      </mat-form-field>
+    <div class="row mt-2">
+
+      <div class="col-auto">
+        <mat-form-field>
+          <input matInput
+                 type="number"
+                 placeholder="Max price"
+                 [formControl]="filterControls.price">
+        </mat-form-field>
+      </div>
+
+      <div class="col-auto">
+        <mat-form-field>
+          <input matInput
+                 [matDatepicker]="picker"
+                 [formControl]="filterControls.delivery_date"
+                 placeholder="Delivery date">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
     </div>
 
-    <div class="col-6">
-      <mat-form-field class="w-100">
-        <input matInput [matDatepicker]="picker" placeholder="Delivery date">
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-      </mat-form-field>
-    </div>
-
-  </div>
+  </app-collapsible>
 
 </mat-card>

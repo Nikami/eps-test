@@ -1,16 +1,10 @@
 import { NgModule, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MaterialModule } from './material/material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ProductsService } from './services/products.service';
 import { ProductsFilterService } from './services/products-filter.service';
 
-const CORE_MODULES = [
-  CommonModule,
-  FormsModule,
-  ReactiveFormsModule,
-  MaterialModule
-];
+const CORE_MODULES = [CommonModule, FormsModule, ReactiveFormsModule];
 
 @NgModule({
   declarations: [],

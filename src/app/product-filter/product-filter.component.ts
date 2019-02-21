@@ -7,17 +7,21 @@ import {
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { debounceTime, tap } from 'rxjs/operators';
+import { ProductsFilterService } from '../core/services/products-filter.service';
 import {
-  Filters,
-  ProductsFilterService
-} from '../core/services/products-filter.service';
-import { AdditionalFilter, CrossFilter, Filter } from '../shared/filter/filter';
+  AdditionalFilter,
+  CrossFilter,
+  DefaultFilter
+} from '../shared/filter/filter';
+import { MS_FORM_FIELDS_DELAY } from '../shared/models/constants';
 
-interface ProductFilters extends Filters {
-  search?: CrossFilter;
-  price?: AdditionalFilter;
-  delivery_date?: AdditionalFilter;
+const enum FILTERS {
+  SEARCH = 'search',
+  PRICE = 'price',
+  DELIVERY_DATE = 'delivery_date'
 }
+
+const MIN_CHARS_SEARCH = 3;
 
 @Component({
   selector: 'app-product-filter',
@@ -26,86 +30,112 @@ interface ProductFilters extends Filters {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductFilterComponent implements OnInit, OnDestroy {
-  public searchFormControl = new FormControl('');
-  public priceFormControl = new FormControl('');
+  public filterControls = {
+    search: new FormControl(),
+    price: new FormControl(),
+    delivery_date: new FormControl()
+  };
   public total$ = new BehaviorSubject<number>(0);
 
-  private filteredProductsSubscription: Subscription;
-  private searchControlSubscription: Subscription;
-  private priceControlSubscription: Subscription;
-
-  private filters: ProductFilters = {};
+  private subscriptions = new Set<Subscription>();
 
   constructor(private productsFilterService: ProductsFilterService) {}
 
   ngOnInit(): void {
-    this.subscribeToFilteredProducts();
-    this.subscribeToSearch();
-    this.subscribeToPrice();
+    this.initSubscriptions();
   }
 
   ngOnDestroy(): void {
-    this.filteredProductsSubscription.unsubscribe();
-    this.searchControlSubscription.unsubscribe();
-    this.priceControlSubscription.unsubscribe();
+    this.clearSubscriptions();
+  }
+
+  private initSubscriptions(): void {
+    this.subscribeToFilteredProducts();
+    this.subscribeToSearch();
+    this.subscribeToPrice();
+    this.subscribeToDeliveryDate();
+  }
+
+  private clearSubscriptions(): void {
+    this.subscriptions.forEach((sub: Subscription) => sub.unsubscribe());
   }
 
   private subscribeToFilteredProducts(): void {
-    this.filteredProductsSubscription = this.productsFilterService
-      .getFilteredProducts()
-      .subscribe(products => this.total$.next(products.length));
+    this.subscriptions.add(
+      this.productsFilterService
+        .getFilteredProducts()
+        .subscribe(products => this.total$.next(products.length))
+    );
   }
 
   private subscribeToSearch(): void {
-    this.searchControlSubscription = this.searchFormControl.valueChanges
-      .pipe(
-        debounceTime(500),
-        tap((searchValue: string) => {
-          if (searchValue.length >= 3) {
-            this.addFilter(
-              'search',
-              new CrossFilter(
-                ['title', 'description'],
-                searchValue.toLowerCase().trim(),
-                false
-              )
-            );
-          } else if (searchValue.length === 0) {
-            this.removeFilter('search');
-          }
-        })
-      )
-      .subscribe();
+    this.subscriptions.add(
+      this.filterControls.search.valueChanges
+        .pipe(
+          debounceTime(MS_FORM_FIELDS_DELAY),
+          tap((searchValue: string) => {
+            this.handleSearchFieldValue(searchValue);
+          })
+        )
+        .subscribe()
+    );
   }
 
   private subscribeToPrice(): void {
-    this.priceControlSubscription = this.priceFormControl.valueChanges
-      .pipe(
-        debounceTime(500),
-        tap(price => {
-          if (price !== null) {
-            this.addFilter('price', { price });
-          } else if (price === null) {
-            this.removeFilter('price');
-          }
-        })
-      )
-      .subscribe();
-  }
-
-  private addFilter(field: string, filter: Filter): void {
-    this.filters = Object.assign(
-      {
-        [field]: filter
-      },
-      this.filters
+    this.subscriptions.add(
+      this.filterControls.price.valueChanges
+        .pipe(
+          debounceTime(MS_FORM_FIELDS_DELAY),
+          tap((price: number) => {
+            this.handleAddFieldValue(price, FILTERS.PRICE, { price });
+          })
+        )
+        .subscribe()
     );
-    this.productsFilterService.applyFilters(this.filters);
   }
 
-  private removeFilter(field: string): void {
-    const { [field]: filter, ...rest } = this.filters;
-    this.filters = rest;
-    this.productsFilterService.applyFilters(this.filters);
+  private subscribeToDeliveryDate(): void {
+    this.subscriptions.add(
+      this.filterControls.delivery_date.valueChanges
+        .pipe(
+          debounceTime(MS_FORM_FIELDS_DELAY),
+          tap((delivery_date: Date) => {
+            console.log(delivery_date);
+            this.handleAddFieldValue(delivery_date, FILTERS.DELIVERY_DATE, {
+              delivery_date
+            });
+          })
+        )
+        .subscribe()
+    );
+  }
+
+  private handleSearchFieldValue(value: string): void {
+    if (value.length >= MIN_CHARS_SEARCH) {
+      this.productsFilterService.addFilter(
+        FILTERS.SEARCH,
+        new CrossFilter(
+          ['title', 'description'],
+          value.toLowerCase().trim(),
+          false
+        )
+      );
+    } else if (value.length === 0) {
+      this.productsFilterService.removeFilter(FILTERS.SEARCH);
+    }
+  }
+
+  private handleAddFieldValue(
+    value: number | Date,
+    name: FILTERS,
+    filter: DefaultFilter
+  ): void {
+    const strValue: string = String(value === null ? '' : value);
+
+    if (strValue.length > 0) {
+      this.productsFilterService.addFilter(name, new AdditionalFilter(filter));
+    } else {
+      this.productsFilterService.removeFilter(name);
+    }
   }
 }
