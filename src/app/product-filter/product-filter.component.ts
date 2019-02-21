@@ -35,7 +35,7 @@ export class ProductFilterComponent implements OnInit, OnDestroy {
     price: new FormControl(),
     delivery_date: new FormControl()
   };
-  public total$ = new BehaviorSubject<number>(0);
+  public total$ = new BehaviorSubject<string>('0 items');
 
   private subscriptions = new Set<Subscription>();
 
@@ -62,9 +62,10 @@ export class ProductFilterComponent implements OnInit, OnDestroy {
 
   private subscribeToFilteredProducts(): void {
     this.subscriptions.add(
-      this.productsFilterService
-        .getFilteredProducts()
-        .subscribe(products => this.total$.next(products.length))
+      this.productsFilterService.getFilteredProducts().subscribe(products => {
+        const declension: string = products.length === 1 ? 'item' : 'items';
+        this.total$.next(`${products.length} ${declension}`);
+      })
     );
   }
 
@@ -100,7 +101,6 @@ export class ProductFilterComponent implements OnInit, OnDestroy {
         .pipe(
           debounceTime(MS_FORM_FIELDS_DELAY),
           tap((delivery_date: Date) => {
-            console.log(delivery_date);
             this.handleAddFieldValue(delivery_date, FILTERS.DELIVERY_DATE, {
               delivery_date
             });

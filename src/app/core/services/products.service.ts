@@ -54,7 +54,6 @@ const products: Product[] = [
 @Injectable()
 export class ProductsService {
   get(): Observable<Product[]> {
-    console.log(products);
     return of(products).pipe(delay(MS_API_DELAY));
   }
 }
