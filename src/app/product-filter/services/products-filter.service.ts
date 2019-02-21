@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Product } from '../../shared/models/product';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { first, tap } from 'rxjs/operators';
-import { ProductsService } from './products.service';
+import { tap } from 'rxjs/operators';
+import { ProductsService } from '../../core/services/products.service';
 import { Filter } from '../../shared/filter/filter';
 
 interface Filters {
@@ -44,7 +44,6 @@ export class ProductsFilterService {
     this.productsService
       .get()
       .pipe(
-        first(),
         tap((ps: Product[]) => {
           this.products = ps;
           this.filteredProducts$.next(ps);

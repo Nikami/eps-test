@@ -9,7 +9,8 @@ import { Product } from '../shared/models/product';
 import { MatTableDataSource } from '@angular/material';
 import { Observable, of, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ProductsFilterService } from '../core/services/products-filter.service';
+import { ProductsFilterService } from '../product-filter/services/products-filter.service';
+import { ProductDetailsService } from '../product-details/services/product-details.service';
 
 @Component({
   selector: 'app-product-table',
@@ -27,11 +28,13 @@ export class ProductTableComponent implements OnInit, OnDestroy {
     'delivery_date'
   ];
   public hasNoData: Observable<boolean> = of(true);
+  public selectedProductId: number;
 
   private productsSubscription: Subscription;
 
   constructor(
     private productsFilterService: ProductsFilterService,
+    private productDetailsService: ProductDetailsService,
     private cd: ChangeDetectorRef
   ) {}
 
@@ -43,10 +46,20 @@ export class ProductTableComponent implements OnInit, OnDestroy {
     this.productsSubscription.unsubscribe();
   }
 
+  selectProduct(product: Product): void {
+    if (this.selectedProductId === product.id) {
+      this.selectedProductId = null;
+      this.productDetailsService.select(null);
+    } else {
+      this.selectedProductId = product.id;
+      this.productDetailsService.select(product);
+    }
+  }
+
   private subscribeToProducts(): void {
     this.productsSubscription = this.productsFilterService
       .getFilteredProducts()
-      .subscribe(products => {
+      .subscribe((products: Product[]) => {
         this.createDataSource(products);
         this.cd.markForCheck();
       });

@@ -7,7 +7,7 @@ import {
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { debounceTime, tap } from 'rxjs/operators';
-import { ProductsFilterService } from '../core/services/products-filter.service';
+import { ProductsFilterService } from './services/products-filter.service';
 import {
   AdditionalFilter,
   CrossFilter,
@@ -33,7 +33,7 @@ export class ProductFilterComponent implements OnInit, OnDestroy {
   public filterControls = {
     search: new FormControl(),
     price: new FormControl(),
-    delivery_date: new FormControl()
+    delivery_date: new FormControl(new Date().toISOString())
   };
   public total$ = new BehaviorSubject<string>('0 items');
 

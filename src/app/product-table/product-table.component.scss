@@ -5,3 +5,13 @@
   color: rgba($black-color, $opacity-md);
   height: 48px;
 }
+
+.product-row {
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover,
+  &.selected {
+    background-color: rgba($indigo-300-color, $opacity-sm);
+  }
+}

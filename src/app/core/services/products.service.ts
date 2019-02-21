@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { Product } from '../../shared/models/product';
-import { delay } from 'rxjs/operators';
+import { delay, tap } from 'rxjs/operators';
 import { MS_API_DELAY } from '../../shared/models/constants';
+import { ErrorResponse } from '../../shared/error/error';
 
 const TIMESTAMP_DELIMITER = 1000;
 
@@ -12,7 +13,7 @@ function timestampToDate(timestamp): Date {
   return date;
 }
 
-const products: Product[] = [
+const PRODUCTS: Product[] = [
   {
     id: 1,
     title: 'Bosch',
@@ -51,9 +52,42 @@ const products: Product[] = [
   }
 ];
 
+const MAX_PRICE = 16000;
+
+function validatePrice(
+  product: Product,
+  onSuccess: Observable<null>
+): Observable<Error | null> {
+  if (product.price > MAX_PRICE) {
+    return throwError(
+      new ErrorResponse('price', `Max price is ${MAX_PRICE}`)
+    ).pipe(delay(MS_API_DELAY));
+  } else {
+    return onSuccess;
+  }
+}
+
 @Injectable()
 export class ProductsService {
+  private products$ = new BehaviorSubject<Product[]>(PRODUCTS);
+
   get(): Observable<Product[]> {
-    return of(products).pipe(delay(MS_API_DELAY));
+    return this.products$.asObservable().pipe(delay(MS_API_DELAY));
+  }
+
+  update(product: Product): Observable<null | Error> {
+    const onSuccess: Observable<null> = of(null).pipe(
+      delay(MS_API_DELAY),
+      tap(() => {
+        const productIdx: number = this.products$.value.findIndex(
+          p => p.id === product.id
+        );
+        const newProducts = [...this.products$.value];
+        newProducts[productIdx] = product;
+        this.products$.next(newProducts);
+      })
+    );
+
+    return validatePrice(product, onSuccess);
   }
 }

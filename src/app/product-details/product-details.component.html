@@ -1,0 +1,54 @@
+<form *ngIf="(hasProductDetails$ | async); else noRecordsTmpl"
+      [formGroup]="form">
+
+  <h3 class="text-uppercase text-center">
+    Product Details
+  </h3>
+
+  <div class="row">
+    <mat-form-field class="col-12">
+      <input
+        matInput
+        type="text"
+        formControlName="title"
+        placeholder="Title">
+    </mat-form-field>
+
+    <mat-form-field class="col-12">
+      <input
+        matInput
+        type="text"
+        formControlName="description"
+        placeholder="Description">
+    </mat-form-field>
+
+    <mat-form-field class="col-md-6">
+      <input
+        matInput
+        type="number"
+        formControlName="price"
+        placeholder="Price">
+
+      <mat-error *ngIf="form.get('price').hasError('max_price')">
+        {{ form.get('price').getError('max_price') }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="col-md-6">
+      <input matInput
+             [matDatepicker]="picker"
+             formControlName="delivery_date"
+             placeholder="Delivery date">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+  </div>
+
+</form>
+
+<ng-template #noRecordsTmpl>
+  <div class="no-records text-uppercase w-100 d-flex align-items-center justify-content-center">
+    No selected records
+  </div>
+</ng-template>
