@@ -26,12 +26,9 @@ export class ProductsFilterService {
 
   addFilter(name: string, filter: Filter): void {
     this.appliedFilters$.next(
-      Object.assign(
-        {
-          [name]: filter
-        },
-        this.appliedFilters$.value
-      )
+      Object.assign({}, this.appliedFilters$.value, {
+        [name]: filter
+      })
     );
   }
 

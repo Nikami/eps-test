@@ -17,7 +17,7 @@ export class ProductDetailsService {
     this.selectedProduct$.next(product);
   }
 
-  update(product: Product): Observable<any> {
+  update(product: Product): Observable<null | Error> {
     return this.productsService.update(product);
   }
 }

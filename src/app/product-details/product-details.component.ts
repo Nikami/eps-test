@@ -89,7 +89,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   private updateProductDetails(formValue: any): void {
     if (this.form.valid) {
       this.productDetailsService
-        .update(Object.assign(this.product, formValue))
+        .update(Object.assign({}, this.product, formValue))
         .subscribe(null, (error: ErrorResponse) => {
           this.form.get(error.field).setErrors({
             max_price: error.message

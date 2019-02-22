@@ -33,7 +33,7 @@ export class ProductFilterComponent implements OnInit, OnDestroy {
   public filterControls = {
     search: new FormControl(),
     price: new FormControl(),
-    delivery_date: new FormControl(new Date().toISOString())
+    delivery_date: new FormControl()
   };
   public total$ = new BehaviorSubject<string>('0 items');
 
