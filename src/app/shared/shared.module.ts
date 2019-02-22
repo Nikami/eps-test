@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CollapsibleComponent } from './components/collapsible/collapsible.component';
-import { MaterialModule } from './material/material.module';
+import { MaterialModule } from './modules/';
 import { SpinnerComponent } from './components/spinner/spinner.component';
 
 const COMPONENTS = [CollapsibleComponent, SpinnerComponent];

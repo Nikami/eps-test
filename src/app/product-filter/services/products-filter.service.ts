@@ -3,7 +3,7 @@ import { Product } from '../../shared/models/product';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ProductsService } from '../../core/services/products.service';
-import { Filter } from '../../shared/filter/filter';
+import { Filter } from '../../shared/models/filter';
 import { SpinnerService } from '../../core/services/spinner.service';
 
 interface Filters {

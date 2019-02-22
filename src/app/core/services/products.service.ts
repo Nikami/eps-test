@@ -6,7 +6,7 @@ import {
   MS_API_DELAY,
   TIMESTAMP_DELIMITER
 } from '../../shared/models/constants';
-import { ErrorResponse } from '../../shared/error/error';
+import { ErrorResponse } from '../../shared/models/error';
 
 function timestampToDate(timestamp): Date {
   const date = new Date(timestamp * TIMESTAMP_DELIMITER);

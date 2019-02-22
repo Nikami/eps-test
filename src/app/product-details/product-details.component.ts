@@ -9,7 +9,7 @@ import { ProductDetailsService } from './services/product-details.service';
 import { Product } from '../shared/models/product';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ErrorResponse } from '../shared/error/error';
+import { ErrorResponse } from '../shared/models/error';
 import { SpinnerService } from '../core/services/spinner.service';
 
 @Component({

@@ -12,7 +12,7 @@ import {
   AdditionalFilter,
   CrossFilter,
   DefaultFilter
-} from '../shared/filter/filter';
+} from '../shared/models/filter';
 import { MS_FORM_FIELDS_DELAY } from '../shared/models/constants';
 
 const enum FILTERS {
