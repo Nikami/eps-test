@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --prod --base-href / --output-hashing none",
+    "build": "ng build --prod --base-href /eps-test/ --output-hashing none",
     "build-serve": "ng serve --port 3200 --prod",
     "test": "ng test",
     "lint": "ng lint",
