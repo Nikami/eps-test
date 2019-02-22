@@ -2,10 +2,11 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { Product } from '../../shared/models/product';
 import { delay, switchMap, tap } from 'rxjs/operators';
-import { MS_API_DELAY } from '../../shared/models/constants';
+import {
+  MS_API_DELAY,
+  TIMESTAMP_DELIMITER
+} from '../../shared/models/constants';
 import { ErrorResponse } from '../../shared/error/error';
-
-const TIMESTAMP_DELIMITER = 1000;
 
 function timestampToDate(timestamp): Date {
   const date = new Date(timestamp * TIMESTAMP_DELIMITER);

@@ -19,7 +19,7 @@ class Spinner {
 
 @Injectable()
 export class SpinnerService {
-  private appliedSpinners$ = new BehaviorSubject<any>({});
+  private appliedSpinners$ = new BehaviorSubject<Spinner>(<Spinner>{});
 
   addSpinner(name: string): void {
     if (!this.appliedSpinners$.value.hasOwnProperty(name)) {
