@@ -5,13 +5,14 @@ import {
   OnInit
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, Subscription } from 'rxjs';
-import { debounceTime, tap } from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs';
+import { debounceTime, takeWhile, tap } from 'rxjs/operators';
 import { ProductsFilterService } from './services/products-filter.service';
 import {
-  AdditionalFilter,
   CrossFilter,
-  DefaultFilter
+  EqualityFilter,
+  Filter,
+  MaxPriceFilter
 } from '../shared/models/filter';
 import { MS_FORM_FIELDS_DELAY } from '../shared/models/constants';
 
@@ -37,7 +38,7 @@ export class ProductFilterComponent implements OnInit, OnDestroy {
   };
   public total$ = new BehaviorSubject<string>('0 items');
 
-  private subscriptions = new Set<Subscription>();
+  private alive = true;
 
   constructor(private productsFilterService: ProductsFilterService) {}
 
@@ -46,7 +47,7 @@ export class ProductFilterComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.clearSubscriptions();
+    this.alive = false;
   }
 
   private initSubscriptions(): void {
@@ -56,58 +57,58 @@ export class ProductFilterComponent implements OnInit, OnDestroy {
     this.subscribeToDeliveryDate();
   }
 
-  private clearSubscriptions(): void {
-    this.subscriptions.forEach((sub: Subscription) => sub.unsubscribe());
-  }
-
   private subscribeToFilteredProducts(): void {
-    this.subscriptions.add(
-      this.productsFilterService.getFilteredProducts().subscribe(products => {
+    this.productsFilterService
+      .getFilteredProducts()
+      .pipe(takeWhile(() => this.alive))
+      .subscribe(products => {
         const declension: string = products.length === 1 ? 'item' : 'items';
         this.total$.next(`${products.length} ${declension}`);
-      })
-    );
+      });
   }
 
   private subscribeToSearch(): void {
-    this.subscriptions.add(
-      this.filterControls.search.valueChanges
-        .pipe(
-          debounceTime(MS_FORM_FIELDS_DELAY),
-          tap((searchValue: string) => {
-            this.handleSearchFieldValue(searchValue);
-          })
-        )
-        .subscribe()
-    );
+    this.filterControls.search.valueChanges
+      .pipe(
+        takeWhile(() => this.alive),
+        debounceTime(MS_FORM_FIELDS_DELAY),
+        tap((searchValue: string) => {
+          this.handleSearchFieldValue(searchValue);
+        })
+      )
+      .subscribe();
   }
 
   private subscribeToPrice(): void {
-    this.subscriptions.add(
-      this.filterControls.price.valueChanges
-        .pipe(
-          debounceTime(MS_FORM_FIELDS_DELAY),
-          tap((price: number) => {
-            this.handleAddFieldValue(price, FILTERS.PRICE, { price });
-          })
-        )
-        .subscribe()
-    );
+    this.filterControls.price.valueChanges
+      .pipe(
+        takeWhile(() => this.alive),
+        debounceTime(MS_FORM_FIELDS_DELAY),
+        tap((price: number) => {
+          this.handleAddFieldValue(
+            price,
+            FILTERS.PRICE,
+            new MaxPriceFilter({ price })
+          );
+        })
+      )
+      .subscribe();
   }
 
   private subscribeToDeliveryDate(): void {
-    this.subscriptions.add(
-      this.filterControls.delivery_date.valueChanges
-        .pipe(
-          debounceTime(MS_FORM_FIELDS_DELAY),
-          tap((delivery_date: Date) => {
-            this.handleAddFieldValue(delivery_date, FILTERS.DELIVERY_DATE, {
-              delivery_date
-            });
-          })
-        )
-        .subscribe()
-    );
+    this.filterControls.delivery_date.valueChanges
+      .pipe(
+        takeWhile(() => this.alive),
+        debounceTime(MS_FORM_FIELDS_DELAY),
+        tap((delivery_date: Date) => {
+          this.handleAddFieldValue(
+            delivery_date,
+            FILTERS.DELIVERY_DATE,
+            new EqualityFilter({ delivery_date })
+          );
+        })
+      )
+      .subscribe();
   }
 
   private handleSearchFieldValue(value: string): void {
@@ -128,12 +129,12 @@ export class ProductFilterComponent implements OnInit, OnDestroy {
   private handleAddFieldValue(
     value: number | Date,
     name: FILTERS,
-    filter: DefaultFilter
+    filter: Filter
   ): void {
     const strValue: string = String(value === null ? '' : value);
 
     if (strValue.length > 0) {
-      this.productsFilterService.addFilter(name, new AdditionalFilter(filter));
+      this.productsFilterService.addFilter(name, filter);
     } else {
       this.productsFilterService.removeFilter(name);
     }

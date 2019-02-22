@@ -7,8 +7,8 @@ import {
 } from '@angular/core';
 import { Product } from '../shared/models/product';
 import { MatTableDataSource } from '@angular/material';
-import { Observable, of, Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, takeWhile } from 'rxjs/operators';
 import { ProductsFilterService } from '../product-filter/services/products-filter.service';
 import { ProductDetailsService } from '../product-details/services/product-details.service';
 import { SpinnerService } from '../core/services/spinner.service';
@@ -32,7 +32,7 @@ export class ProductTableComponent implements OnInit, OnDestroy {
   public selectedProductId: number;
   public spinnerState: Observable<boolean>;
 
-  private productsSubscription: Subscription;
+  private alive = true;
 
   constructor(
     private productsFilterService: ProductsFilterService,
@@ -47,7 +47,7 @@ export class ProductTableComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.productsSubscription.unsubscribe();
+    this.alive = false;
   }
 
   selectProduct(product: Product): void {
@@ -65,8 +65,9 @@ export class ProductTableComponent implements OnInit, OnDestroy {
   }
 
   private subscribeToProducts(): void {
-    this.productsSubscription = this.productsFilterService
+    this.productsFilterService
       .getFilteredProducts()
+      .pipe(takeWhile(() => this.alive))
       .subscribe((products: Product[]) => {
         this.createDataSource(products);
         this.cd.markForCheck();

@@ -7,10 +7,11 @@ import {
 } from '@angular/core';
 import { ProductDetailsService } from './services/product-details.service';
 import { Product } from '../shared/models/product';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ErrorResponse } from '../shared/models/error';
 import { SpinnerService } from '../core/services/spinner.service';
+import { takeWhile } from 'rxjs/operators';
 
 @Component({
   selector: 'app-product-details',
@@ -26,9 +27,9 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   public hasProductDetails$ = new BehaviorSubject<boolean>(false);
   public spinnerState: Observable<boolean>;
 
+  private alive = true;
   private spinnerName = 'product_details';
   private product: Product;
-  private subscriptions = new Set<Subscription>();
 
   constructor(
     private productDetailsService: ProductDetailsService,
@@ -40,23 +41,15 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initSpinnerState();
-    this.initSubscriptions();
+    this.subscribeToProductDetails();
   }
 
   ngOnDestroy(): void {
-    this.clearSubscriptions();
+    this.alive = false;
   }
 
   private initSpinnerState(): void {
     this.spinnerState = this.spinnerService.getSpinnerState(this.spinnerName);
-  }
-
-  private initSubscriptions(): void {
-    this.subscribeToProductDetails();
-  }
-
-  private clearSubscriptions(): void {
-    this.subscriptions.forEach((sub: Subscription) => sub.unsubscribe());
   }
 
   private createForm(): void {
@@ -74,27 +67,27 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
         updateOn: 'blur'
       }
     );
+
+    this.form.valueChanges
+      .pipe(takeWhile(() => this.alive))
+      .subscribe((value: any) => {
+        this.updateProductDetails(value);
+      });
   }
 
   private subscribeToProductDetails(): void {
-    this.subscriptions.add(
-      this.productDetailsService.get().subscribe((product: Product) => {
+    this.productDetailsService
+      .get()
+      .pipe(takeWhile(() => this.alive))
+      .subscribe((product: Product) => {
         this.product = product;
 
         if (product) {
           this.createForm();
-          this.subscribeToFormChanges();
         }
 
         this.hasProductDetails$.next(!!product);
-      })
-    );
-  }
-
-  private subscribeToFormChanges(): void {
-    this.form.valueChanges.subscribe((value: any) => {
-      this.updateProductDetails(value);
-    });
+      });
   }
 
   private updateProductDetails(formValue: any): void {
