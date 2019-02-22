@@ -1,0 +1,8 @@
+@import "../../../../assets/styles/constants/colors";
+
+.spinner-container {
+  background-color: rgba($white-color, $opacity-lg);
+  top: 0;
+  left: 0;
+  z-index: 100;
+}

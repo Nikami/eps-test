@@ -1,3 +1,5 @@
+<app-spinner [isSpinning]="spinnerState"></app-spinner>
+
 <form *ngIf="(hasProductDetails$ | async); else noRecordsTmpl"
       [formGroup]="form">
 

@@ -7,9 +7,10 @@ import {
 } from '@angular/core';
 import { ProductDetailsService } from './services/product-details.service';
 import { Product } from '../shared/models/product';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ErrorResponse } from '../shared/error/error';
+import { SpinnerService } from '../core/services/spinner.service';
 
 @Component({
   selector: 'app-product-details',
@@ -19,25 +20,35 @@ import { ErrorResponse } from '../shared/error/error';
 })
 export class ProductDetailsComponent implements OnInit, OnDestroy {
   @HostBinding('class') classList =
-    'mat-card d-flex w-100 flex-column justify-content-center';
+    'mat-card d-flex w-100 flex-column justify-content-center position-relative';
 
   public form: FormGroup;
   public hasProductDetails$ = new BehaviorSubject<boolean>(false);
+  public spinnerState: Observable<boolean>;
 
+  private spinnerName = 'product_details';
   private product: Product;
   private subscriptions = new Set<Subscription>();
 
   constructor(
     private productDetailsService: ProductDetailsService,
-    private fb: FormBuilder
-  ) {}
+    private fb: FormBuilder,
+    private spinnerService: SpinnerService
+  ) {
+    this.spinnerService.addSpinner(this.spinnerName);
+  }
 
   ngOnInit(): void {
+    this.initSpinnerState();
     this.initSubscriptions();
   }
 
   ngOnDestroy(): void {
     this.clearSubscriptions();
+  }
+
+  private initSpinnerState(): void {
+    this.spinnerState = this.spinnerService.getSpinnerState(this.spinnerName);
   }
 
   private initSubscriptions(): void {
@@ -88,13 +99,24 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
 
   private updateProductDetails(formValue: any): void {
     if (this.form.valid) {
+      this.spinnerService.updateSpinnerState(this.spinnerName, true);
+      this.spinnerService.updateSpinnerState('products', true);
+
       this.productDetailsService
         .update(Object.assign({}, this.product, formValue))
-        .subscribe(null, (error: ErrorResponse) => {
-          this.form.get(error.field).setErrors({
-            max_price: error.message
-          });
-        });
+        .subscribe(
+          () => {
+            this.spinnerService.updateSpinnerState(this.spinnerName, false);
+            this.spinnerService.updateSpinnerState('products', false);
+          },
+          (error: ErrorResponse) => {
+            this.form.get(error.field).setErrors({
+              max_price: error.message
+            });
+            this.spinnerService.updateSpinnerState(this.spinnerName, false);
+            this.spinnerService.updateSpinnerState('products', false);
+          }
+        );
     }
   }
 }

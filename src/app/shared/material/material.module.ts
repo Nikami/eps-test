@@ -5,6 +5,7 @@ import {
   MatDatepickerModule,
   MatInputModule,
   MatNativeDateModule,
+  MatProgressSpinnerModule,
   MatTableModule,
   MatTooltipModule
 } from '@angular/material';
@@ -16,7 +17,8 @@ const COMPONENT_MODULES = [
   MatTooltipModule,
   MatNativeDateModule,
   MatDatepickerModule,
-  MatTableModule
+  MatTableModule,
+  MatProgressSpinnerModule
 ];
 
 @NgModule({

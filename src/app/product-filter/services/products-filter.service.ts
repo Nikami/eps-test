@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ProductsService } from '../../core/services/products.service';
 import { Filter } from '../../shared/filter/filter';
+import { SpinnerService } from '../../core/services/spinner.service';
 
 interface Filters {
   [key: string]: Filter;
@@ -11,11 +12,16 @@ interface Filters {
 
 @Injectable()
 export class ProductsFilterService {
+  private spinnerName = 'products';
   private products: Product[] = [];
   private filteredProducts$ = new BehaviorSubject<Product[]>([]);
   private appliedFilters$ = new BehaviorSubject<Filters>({});
 
-  constructor(private productsService: ProductsService) {
+  constructor(
+    private productsService: ProductsService,
+    private spinnerService: SpinnerService
+  ) {
+    this.spinnerService.addSpinner(this.spinnerName);
     this.subscribeToProducts();
     this.subscribeToAppliedFilters();
   }
@@ -38,12 +44,14 @@ export class ProductsFilterService {
   }
 
   private subscribeToProducts(): void {
+    this.spinnerService.updateSpinnerState(this.spinnerName, true);
     this.productsService
       .get()
       .pipe(
         tap((ps: Product[]) => {
           this.products = ps;
           this.filteredProducts$.next(ps);
+          this.spinnerService.updateSpinnerState(this.spinnerName, false);
         })
       )
       .subscribe();

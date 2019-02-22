@@ -11,6 +11,7 @@ import { Observable, of, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ProductsFilterService } from '../product-filter/services/products-filter.service';
 import { ProductDetailsService } from '../product-details/services/product-details.service';
+import { SpinnerService } from '../core/services/spinner.service';
 
 @Component({
   selector: 'app-product-table',
@@ -29,16 +30,19 @@ export class ProductTableComponent implements OnInit, OnDestroy {
   ];
   public hasNoData: Observable<boolean> = of(true);
   public selectedProductId: number;
+  public spinnerState: Observable<boolean>;
 
   private productsSubscription: Subscription;
 
   constructor(
     private productsFilterService: ProductsFilterService,
     private productDetailsService: ProductDetailsService,
+    private spinnerService: SpinnerService,
     private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    this.initSpinnerState();
     this.subscribeToProducts();
   }
 
@@ -54,6 +58,10 @@ export class ProductTableComponent implements OnInit, OnDestroy {
       this.selectedProductId = product.id;
       this.productDetailsService.select(product);
     }
+  }
+
+  private initSpinnerState(): void {
+    this.spinnerState = this.spinnerService.getSpinnerState('products');
   }
 
   private subscribeToProducts(): void {

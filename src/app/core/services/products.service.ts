@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { Product } from '../../shared/models/product';
-import { delay, tap } from 'rxjs/operators';
+import { delay, switchMap, tap } from 'rxjs/operators';
 import { MS_API_DELAY } from '../../shared/models/constants';
 import { ErrorResponse } from '../../shared/error/error';
 
@@ -59,9 +59,12 @@ function validatePrice(
   onSuccess: Observable<null>
 ): Observable<Error | null> {
   if (product.price > MAX_PRICE) {
-    return throwError(
-      new ErrorResponse('price', `Max price is ${MAX_PRICE}`)
-    ).pipe(delay(MS_API_DELAY));
+    return of(null).pipe(
+      delay(MS_API_DELAY),
+      switchMap(() =>
+        throwError(new ErrorResponse('price', `Max price is ${MAX_PRICE}`))
+      )
+    );
   } else {
     return onSuccess;
   }
