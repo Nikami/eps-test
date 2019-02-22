@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --aot --base-href",
+    "build": "ng build --base-href",
     "build-serve": "ng serve --port 3200 --prod",
     "test": "ng test",
     "lint": "ng lint",
