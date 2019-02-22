@@ -50,7 +50,7 @@ export class ProductsFilterService {
       .pipe(
         tap((ps: Product[]) => {
           this.products = ps;
-          this.filteredProducts$.next(ps);
+          this.appliedFilters$.next(this.appliedFilters$.value);
           this.spinnerService.updateSpinnerState(this.spinnerName, false);
         })
       )
