@@ -2,32 +2,29 @@
 
 $toggle-border-width: 5px;
 $collapsible-max-height: 350px;
+$toggle-text-color: rgba($black-color, $opacity-md);
 
 .lbl-toggle {
-  display: block;
-  color: rgba($black-color, $opacity-md);
+  color: $toggle-text-color;
   cursor: pointer;
+  display: block;
   transition: color 0.2s ease;
-}
 
-.lbl-toggle:hover {
-  color: $indigo-300-color;
-}
+  &:hover {
+    color: $indigo-300-color;
+  }
 
-.lbl-toggle::before {
-  content: " ";
-  display: inline-block;
-  border-top: $toggle-border-width solid transparent;
-  border-bottom: $toggle-border-width solid transparent;
-  border-left: $toggle-border-width solid currentColor;
-  vertical-align: middle;
-  margin-right: 0.7rem;
-  transform: translateY(-2px);
-  transition: transform 0.4s ease;
-}
-
-.toggle:checked + .lbl-toggle::before {
-  transform: rotate(90deg) translateX(-3px);
+  &::before {
+    border-bottom: $toggle-border-width solid transparent;
+    border-left: $toggle-border-width solid currentColor;
+    border-top: $toggle-border-width solid transparent;
+    content: " ";
+    display: inline-block;
+    margin-right: 0.7rem;
+    transform: translateY(-2px);
+    transition: transform 0.4s ease;
+    vertical-align: middle;
+  }
 }
 
 .collapsible-content {
@@ -36,11 +33,17 @@ $collapsible-max-height: 350px;
   transition: max-height 0.3s ease;
 }
 
-.toggle:checked + .lbl-toggle + .collapsible-content {
-  max-height: $collapsible-max-height;
-}
+.toggle {
+  &:checked + .lbl-toggle {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 
-.toggle:checked + .lbl-toggle {
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
+    &::before {
+      transform: rotate(90deg) translateX(-3px);
+    }
+  }
+
+  &:checked + .lbl-toggle + .collapsible-content {
+    max-height: $collapsible-max-height;
+  }
 }

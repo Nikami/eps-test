@@ -1,5 +1,7 @@
 @import "constants/colors";
 
+$body-bg-color: rgba($black-color, $opacity-lg);
+
 body {
-  background-color: rgba($black-color, $opacity-lg);
+  background-color: $body-bg-color;
 }

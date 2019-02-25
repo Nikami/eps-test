@@ -1,8 +1,11 @@
 @import "../../assets/styles/constants/colors";
 
+$no-records-text-color: rgba($black-color, $opacity-md);
+$row-text-selected-color: rgba($indigo-300-color, $opacity-sm);
+
 .no-records {
   background: $white-color;
-  color: rgba($black-color, $opacity-md);
+  color: $no-records-text-color;
   height: 100px;
 }
 
@@ -12,6 +15,6 @@
 
   &:hover,
   &.selected {
-    background-color: rgba($indigo-300-color, $opacity-sm);
+    background-color: $row-text-selected-color;
   }
 }

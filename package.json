@@ -7,9 +7,11 @@
     "build": "ng build --prod --base-href /eps-test/ --output-hashing none",
     "build-serve": "ng serve --port 3200 --prod",
     "test": "ng test",
-    "lint": "ng lint",
-    "e2e": "ng e2e",
-    "format": "node_modules/.bin/prettier --config .prettierrc --write \"src/{.,app,environments,assets}/**/*{.ts,.js,.css,.scss}\""
+    "sass-lint": "node ./node_modules/sass-lint/bin/sass-lint.js -c .sasslintrc -v -q",
+    "sass-lint:fix": "sass-lint-auto-fix",
+    "lint": "npm run sass-lint && ng lint",
+    "format": "node_modules/.bin/prettier --config .prettierrc --write \"src/{.,app,environments,assets}/**/*{.ts,.js,.css,.scss}\"",
+    "e2e": "ng e2e"
   },
   "husky": {
     "hooks": {
@@ -62,6 +64,8 @@
     "lint-staged": "^8.1.4",
     "prettier": "^1.16.4",
     "protractor": "~5.4.0",
+    "sass-lint": "^1.12.1",
+    "sass-lint-auto-fix": "^0.15.2",
     "ts-node": "~7.0.0",
     "tslint": "~5.11.0",
     "typescript": "~3.1.6"

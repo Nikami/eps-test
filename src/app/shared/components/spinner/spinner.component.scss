@@ -1,8 +1,10 @@
 @import "../../../../assets/styles/constants/colors";
 
+$spinner-container-bg-color: rgba($white-color, $opacity-lg);
+
 .spinner-container {
-  background-color: rgba($white-color, $opacity-lg);
-  top: 0;
+  background-color: $spinner-container-bg-color;
   left: 0;
+  top: 0;
   z-index: 100;
 }

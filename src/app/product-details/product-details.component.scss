@@ -1,9 +1,11 @@
 @import "../../assets/styles/constants/colors";
 
+$no-records-text-color: rgba($black-color, $opacity-md);
+
 :host {
   min-height: 270px;
 }
 
 .no-records {
-  color: rgba($black-color, $opacity-md);
+  color: $no-records-text-color;
 }
