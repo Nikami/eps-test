@@ -1,0 +1,49 @@
+<mat-card class="mb-2" [formGroup]="filtersForm">
+  <div class="row">
+    <div class="col-6 d-flex align-items-center">
+      <span class="font-weight-bold">Total:</span>
+    </div>
+
+    <div class="col-6">
+
+      <mat-form-field class="w-100">
+        <input
+          matInput
+          type="text"
+          placeholder="Search"
+          formControlName="searchQuery">
+      </mat-form-field>
+
+    </div>
+
+  </div>
+
+  <app-collapsible label="Additional filter">
+
+    <div class="row mt-2">
+
+      <div class="col-auto">
+        <mat-form-field>
+          <input matInput
+                 type="number"
+                 placeholder="Max price"
+                 formControlName="maxPrice">
+        </mat-form-field>
+      </div>
+
+      <div class="col-auto">
+        <mat-form-field>
+          <input matInput
+                 [matDatepicker]="picker"
+                 formControlName="deliveryDate"
+                 placeholder="Delivery date">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+    </div>
+
+  </app-collapsible>
+
+</mat-card>

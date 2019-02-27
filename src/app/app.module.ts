@@ -12,6 +12,8 @@ import { SharedModule } from './shared/';
 import { ProductsFilterService } from './product-filter/services/products-filter.service';
 import { ProductDetailsComponent } from './product-details/product-details.component';
 import { ProductDetailsService } from './product-details/services/product-details.service';
+import { OrderTableModule } from './order-table';
+import { OrderFiltersModule } from './order-filters';
 
 @NgModule({
   declarations: [
@@ -25,7 +27,10 @@ import { ProductDetailsService } from './product-details/services/product-detail
     BrowserAnimationsModule,
     AppRoutingModule,
     CoreModule,
-    SharedModule
+    SharedModule,
+
+    OrderTableModule,
+    OrderFiltersModule
   ],
   providers: [ProductsFilterService, ProductDetailsService],
   bootstrap: [AppComponent]

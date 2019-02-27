@@ -7,8 +7,8 @@ import {
 } from '@angular/core';
 import { Product } from '../shared/models/product';
 import { MatTableDataSource } from '@angular/material';
-import { Observable, of } from 'rxjs';
-import { map, takeWhile } from 'rxjs/operators';
+import { Observable, of, Subject } from 'rxjs';
+import { map, takeWhile, takeUntil } from 'rxjs/operators';
 import { ProductsFilterService } from '../product-filter/services/products-filter.service';
 import { ProductDetailsService } from '../product-details/services/product-details.service';
 import { SpinnerService } from '../core/services/spinner.service';
@@ -33,6 +33,7 @@ export class ProductTableComponent implements OnInit, OnDestroy {
   public spinnerState: Observable<boolean>;
 
   private alive = true;
+  private readonly destroyed$ = new Subject<boolean>();
 
   constructor(
     private productsFilterService: ProductsFilterService,
@@ -48,6 +49,8 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.alive = false;
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
 
   selectProduct(product: Product): void {
@@ -67,11 +70,17 @@ export class ProductTableComponent implements OnInit, OnDestroy {
   private subscribeToProducts(): void {
     this.productsFilterService
       .getFilteredProducts()
-      .pipe(takeWhile(() => this.alive))
-      .subscribe((products: Product[]) => {
-        this.createDataSource(products);
-        this.cd.markForCheck();
-      });
+      // .pipe(takeWhile(() => this.alive))
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe(
+        (products: Product[]) => {
+          console.log('subscribe');
+          this.createDataSource(products);
+          this.cd.markForCheck();
+        },
+        () => console.log('error'),
+        () => console.log('complete')
+      );
   }
 
   private createDataSource(products: Product[]): void {

@@ -1,14 +1,38 @@
-<div class="container-fluid pt-3 pb-3">
+<!-- <div class="container-fluid pt-3 pb-3">
+
+  <div class="row">
+    <button (click)="isVisible = !isVisible">Toggle table</button>
+  </div>
 
   <div class="row">
 
     <div class="col-md-6">
       <app-product-filter></app-product-filter>
-      <app-product-table></app-product-table>
+      <app-product-table *ngIf="isVisible"></app-product-table>
     </div>
 
     <div class="col-md-6">
       <app-product-details></app-product-details>
+    </div>
+
+  </div>
+
+</div> -->
+
+<div class="container-fluid pt-3 pb-3">
+
+  <div class="row">
+    <button (click)="isVisible = !isVisible">Toggle table</button>
+  </div>
+
+  <div class="row">
+
+    <div class="col-md-6">
+      <app-order-filters></app-order-filters>
+      <app-order-table *ngIf="isVisible"></app-order-table>
+    </div>
+
+    <div class="col-md-6">
     </div>
 
   </div>
